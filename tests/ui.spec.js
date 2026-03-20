@@ -121,3 +121,4 @@ test.describe('Data-Driven login scenario from JSON file', () => {
     });
   }
 });
+// npx playwright test ui.spec.js --trace on

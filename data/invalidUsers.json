@@ -2,7 +2,7 @@
     {
         "username": "tomsmith",
         "password": "wrongpassword",
-        "expectedError": "Your password is invalid!"
+        "expectedError": "Your password is invalid!     qqq"
     },
     {
         "username": "wrongusername",
