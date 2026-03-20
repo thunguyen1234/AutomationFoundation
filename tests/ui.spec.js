@@ -1,6 +1,7 @@
 const {test, expect} = require('@playwright/test');
 const {LoginPage} = require('../pages/LoginPage');
 const {SecurePage} = require('../pages/SecurePage');
+const invalidUsersData = require('../data/invalidUsers.json');
 
 // test('my first UI test', async({page}) => {
 //     console.log('1. open browser and navigate to the web')
@@ -85,23 +86,38 @@ const {SecurePage} = require('../pages/SecurePage');
 // expect(successMessage).toContain('You logged into a secure area!');
 // });
 //we group all tests into one describe block
-test.describe('login page scenario', () => {
-  //declare the waiter before all tests, so all tests can see him.
+// test.describe('login page scenario', () => {
+//   //declare the waiter before all tests, so all tests can see him.
+//   let loginPage;
+//   let securePage;
+//   // this run automatically before each test.
+//   test.beforeEach(async ({ page }) => {
+//     await page.goto('https://the-internet.herokuapp.com/login');
+//      loginPage = new LoginPage(page);
+//      securePage = new SecurePage(page);
+//   });
+//   //test 1
+//   test('successful login', async ({ page }) => {
+//       await loginPage.login('tomsmith', 'SuperSecretPassword!');
+//   })
+//   //test 2
+//   test('failed login with wrong password', async ({ page }) => {
+//     await loginPage.login('tomsmith', 'wrongpassword');
+//     expect(await loginPage.getErrorMessage()).toContain('Your password is invalid!');
+//   })
+// })
+//
+test.describe('Data-Driven login scenario from JSON file', () => {
   let loginPage;
-  let securePage;
-  // this run automatically before each test.
   test.beforeEach(async ({ page }) => {
     await page.goto('https://the-internet.herokuapp.com/login');
      loginPage = new LoginPage(page);
-     securePage = new SecurePage(page);
   });
-  //test 1
-  test('successful login', async ({ page }) => {
-      await loginPage.login('tomsmith', 'SuperSecretPassword!');
-  })
-  //test 2
-  test('failed login with wrong password', async ({ page }) => {
-    await loginPage.login('tomsmith', 'wrongpassword');
-    expect(await loginPage.getErrorMessage()).toContain('Your password is invalid!');
-  })
-})
+  //loop through the imported JSON data
+  for(const user of invalidUsersData){
+    test(`failed login for username: ${user.username}`, async ({ page }) => {
+      await loginPage.login(user.username, user.password);
+      expect(await loginPage.getErrorMessage()).toContain(user.expectedError);
+    });
+  }
+});
