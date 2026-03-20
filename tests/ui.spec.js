@@ -117,7 +117,7 @@ test.describe('Data-Driven login scenario from JSON file', () => {
   for(const user of invalidUsersData){
     test(`failed login for username: ${user.username}`, async ({ page }) => {
       await loginPage.login(user.username, user.password);
-      expect(await loginPage.getErrorMessage()).toContain(user.expectedError);
+      expect(await loginPage.flashMessage()).toContain(user.expectedError);
     });
   }
 });

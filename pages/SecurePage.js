@@ -1,11 +1,8 @@
-class SecurePage {
-    constructor(page){
-this.page = page;
-this.flashAlert = page.locator('#flash');
+const {BasePage} = require('../pages/BasePage');
+class SecurePage extends BasePage{
+    constructor(page) {
+super(page);
+    }
 
-    }
-    async getSuccessMessage(){
-        return await this.flashAlert.textContent();
-    }
 }
 module.exports = {SecurePage};
