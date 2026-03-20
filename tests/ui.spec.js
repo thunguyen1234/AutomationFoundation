@@ -1,4 +1,6 @@
 const {test, expect} = require('@playwright/test');
+const {LoginPage} = require('../pages/LoginPage');
+const {SecurePage} = require('../pages/SecurePage');
 
 // test('my first UI test', async({page}) => {
 //     console.log('1. open browser and navigate to the web')
@@ -56,18 +58,50 @@ const {test, expect} = require('@playwright/test');
 //   console.log('5. checkbox test passed! ')
 
 // });
-test('test 6: handle a new tab', async ({ page, context }) => {
-  //page as a single browser tab, and context as a whole browser windown that hold all the tabs.
-  await page.goto('https://the-internet.herokuapp.com/windows');
-  console.log('1.set a new trap for the new page... ');
-  const newPagePromise = context.waitForEvent('page');
-  console.log('2. click the link to open a new tab... ');
-  await page.getByRole('link', { name: 'Click Here' }).click();
-  console.log('3. catch the new tab... ');
-  const newPage = await newPagePromise;
-  console.log('4. wait for the new page to fully load... ');
-  await newPage.waitForLoadState();
-  console.log('5. verify the new page title... ');
-  await expect(newPage).toHaveTitle('New Window');
-  console.log('new tab test passed!');
-});
+// test('test 6: handle a new tab', async ({ page, context }) => {
+//   //page as a single browser tab, and context as a whole browser windown that hold all the tabs.
+//   await page.goto('https://the-internet.herokuapp.com/windows');
+//   console.log('1.set a new trap for the new page... ');
+//   const newPagePromise = context.waitForEvent('page');
+//   console.log('2. click the link to open a new tab... ');
+//   await page.getByRole('link', { name: 'Click Here' }).click();
+//   console.log('3. catch the new tab... ');
+//   const newPage = await newPagePromise;
+//   console.log('4. wait for the new page to fully load... ');
+//   await newPage.waitForLoadState();
+//   console.log('5. verify the new page title... ');
+//   await expect(newPage).toHaveTitle('New Window');
+//   console.log('new tab test passed!');
+// });
+// test('level 3: strick POM with multiple pages', async ({ page }) => {
+//   console.log('1. navigate to the login page...');
+//   await page.goto('https://the-internet.herokuapp.com/login');
+// const loginPage = new LoginPage(page);
+// const securePage = new SecurePage(page);
+// console.log('2. perform the login...');
+// await loginPage.login('tomsmith', 'SuperSecretPassword!');
+// console.log('3. verify the success message appear...');
+// const successMessage = await securePage.getSuccessMessage();
+// expect(successMessage).toContain('You logged into a secure area!');
+// });
+//we group all tests into one describe block
+test.describe('login page scenario', () => {
+  //declare the waiter before all tests, so all tests can see him.
+  let loginPage;
+  let securePage;
+  // this run automatically before each test.
+  test.beforeEach(async ({ page }) => {
+    await page.goto('https://the-internet.herokuapp.com/login');
+     loginPage = new LoginPage(page);
+     securePage = new SecurePage(page);
+  });
+  //test 1
+  test('successful login', async ({ page }) => {
+      await loginPage.login('tomsmith', 'SuperSecretPassword!');
+  })
+  //test 2
+  test('failed login with wrong password', async ({ page }) => {
+    await loginPage.login('tomsmith', 'wrongpassword');
+    expect(await loginPage.getErrorMessage()).toContain('Your password is invalid!');
+  })
+})
