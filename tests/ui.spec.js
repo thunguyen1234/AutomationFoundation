@@ -2,6 +2,10 @@ const {test, expect} = require('@playwright/test');
 const {LoginPage} = require('../pages/LoginPage');
 const {SecurePage} = require('../pages/SecurePage');
 const invalidUsersData = require('../data/invalidUsers.json');
+//require('dotenv')- go to the system and grab the dotenv package already installed (mpm i dotenv)
+//.config() this is action button, open the package and load it to the computer's memory.
+require('dotenv').config();
+
 
 // test('my first UI test', async({page}) => {
 //     console.log('1. open browser and navigate to the web')
@@ -107,18 +111,34 @@ const invalidUsersData = require('../data/invalidUsers.json');
 //   })
 // })
 //
-test.describe('Data-Driven login scenario from JSON file', () => {
-  let loginPage;
-  test.beforeEach(async ({ page }) => {
-    await page.goto('https://the-internet.herokuapp.com/login');
-     loginPage = new LoginPage(page);
-  });
-  //loop through the imported JSON data
-  for(const user of invalidUsersData){
-    test(`failed login for username: ${user.username}`, async ({ page }) => {
-      await loginPage.login(user.username, user.password);
-      expect(await loginPage.flashMessage()).toContain(user.expectedError);
-    });
-  }
-});
+// test.describe('Data-Driven login scenario from JSON file', () => {
+//   let loginPage;
+//   test.beforeEach(async ({ page }) => {
+//     await page.goto('https://the-internet.herokuapp.com/login');
+//      loginPage = new LoginPage(page);
+//   });
+//   //loop through the imported JSON data
+//   for(const user of invalidUsersData){
+//     test(`failed login for username: ${user.username}`, async ({ page }) => {
+//       await loginPage.login(user.username, user.password);
+//       expect(await loginPage.flashMessage()).toContain(user.expectedError);
+//     });
+//   }
+// });
 // npx playwright test ui.spec.js --trace on
+
+
+ 
+  test('level 3: login using POM and ENV', async({page})=>{
+      //declare new object
+    const loginPage = new LoginPage(page);
+  console.log('1. go to the website..');
+  console.log('process.env. baseurl: ' + process.env.BASE_URL);
+  await page.goto(process.env.BASE_URL +'/login');
+  console.log('2. login in securely..');
+  await loginPage.login(process.env.ADMIN_NAME,process.env.ADMIN_PASS);
+  console.log('3. verify the successful login message..');
+ expect(await loginPage.flashMessage()).toContain('You logged into a secure area!');
+  });
+
+
